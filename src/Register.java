@@ -20,8 +20,7 @@ public class Register {
     }
     public int  idGeneration() {
         Random r=new Random();
-        int rn=r.nextInt(1000000);
-        return rn;
+        return r.nextInt(1000000);
     }
     public void insert(int p_id,String name ,int age,String pass){
         try{
@@ -68,6 +67,7 @@ public class Register {
                     login();
                 }
             }
+            resultSet.close();
             while(resultSet1.next()){
                 String type = resultSet1.getString("Seat_Type");
                 if(type.equals("E")){
@@ -86,6 +86,7 @@ public class Register {
                     System.out.println("Current Ticket Rate : "+resultSet5.getString("T_Price"));
                 }
             }
+            resultSet1.close();
         }
         catch (SQLException e){
             e.printStackTrace();
