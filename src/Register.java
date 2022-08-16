@@ -16,26 +16,11 @@ public class Register {
         System.out.print("Set Password : ");
         String pass = scanner.nextLine();
         int p_id = idGeneration();
-        insert(p_id,name,age,pass);
+        InsertUpdateData.insert(p_id,name,age,pass);
     }
     public int  idGeneration() {
         Random r=new Random();
         return r.nextInt(1000000);
-    }
-    public void insert(int p_id,String name ,int age,String pass){
-        try{
-            Connection con = DriverManager.getConnection(DB_URL, USER, PASS);
-            Statement statement = con.createStatement();
-            String sql = "INSERT INTO PASSENGER_Table1 VALUES ("+p_id+",'"+name+"',"+age+",'"+pass+"')";
-            statement.executeUpdate(sql);
-            System.out.println("Thank you...");
-            System.out.println("----------YOU HAVE REGISTERED SUCCESSFULLY-----------");
-            System.out.println("\t Register Number : "+p_id);
-            System.out.println(" >>>>>>>>>Choose your choice<<<<<<<<<<< ");
-        }
-        catch(SQLException e){
-            e.printStackTrace();
-        }
     }
     public void login(){
         System.out.print("Enter your Passenger ID : ");
@@ -54,8 +39,6 @@ public class Register {
             Statement statement = con.createStatement();
             String sql1 = "SELECT * FROM PASSENGER_Table1 where P_Id = '"+p_id+"'";
             ResultSet resultSet = statement.executeQuery(sql1);
-            String sql2 = "SELECT * FROM Booking_Table where P_Id ='"+p_id+"'";
-            ResultSet resultSet1 = statement.executeQuery(sql2);
             while (resultSet.next()) {
                 String pName = resultSet.getString("P_Name");
                 String word = resultSet.getString("Password");
@@ -67,7 +50,8 @@ public class Register {
                     login();
                 }
             }
-            resultSet.close();
+            String sql2 = "SELECT * FROM Book_Table where P_Id ='"+p_id+"'";
+            ResultSet resultSet1 = statement.executeQuery(sql2);
             while(resultSet1.next()){
                 String type = resultSet1.getString("Seat_Type");
                 if(type.equals("E")){
@@ -86,7 +70,6 @@ public class Register {
                     System.out.println("Current Ticket Rate : "+resultSet5.getString("T_Price"));
                 }
             }
-            resultSet1.close();
         }
         catch (SQLException e){
             e.printStackTrace();

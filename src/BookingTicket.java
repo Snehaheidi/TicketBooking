@@ -9,7 +9,7 @@ public class BookingTicket {
     final String PASS = "root";
     int e_seat = 10,b_seat = 15, e_price = 5500 , b_price = 5000 , t_price = 5500 , t_seat = 5;
     String seat_type ="";
-    int bookNoSeat , temp , amount , booking_id ,balance ,p_id;
+    int bookNoSeat , temp , amount ,balance ,p_id;
     public void book(){
         System.out.println("Enter the Passenger Id");
         p_id = scanner.nextInt();
@@ -18,6 +18,7 @@ public class BookingTicket {
         scanner.nextLine();
         System.out.println("* Economy class   * Business class (enter E/B)");
         seat_type = scanner.nextLine();
+        int booking_id = idGeneration1();
         if(seat_type.equals("E")){
             System.out.println("Available Seats : Economy -> "+e_seat);
             System.out.println("Current Ticket Rate -> Economy : "+e_price);
@@ -35,26 +36,26 @@ public class BookingTicket {
                     e_seat--;
                     temp--;
                 }
+                System.out.println("-----Booking Id-----"+booking_id);
                 System.out.println(f_type+" Flight --> "+bookNoSeat+" Economy Seat Booked Successfully.");
                 amount = bookNoSeat * e_price;
                 System.out.println("Payment :"+amount);
                 e_price *= 200;
-                insertData(seat_type,p_id,e_seat,e_price,bookNoSeat,amount);
-                bookingData(booking_id,f_type,seat_type,p_id);
+                InsertUpdateData.insertData(seat_type,p_id,e_seat,e_price,bookNoSeat,amount);
+                InsertUpdateData.bookingData(booking_id,f_type,seat_type,p_id);
             }
             else {
                 while (temp>0) {
                     b_seat--;
                     temp--;
                 }
-                booking_id = idGeneration1();
                 System.out.println("-----Booking Id-----"+booking_id);
                 System.out.println(f_type+" Flight --> "+bookNoSeat+"Business Seat Booked Successfully.");
                 int result = bookNoSeat * b_price;
                 System.out.println("Payment :"+result);
                 b_price *= 100;
-                bookingData(booking_id,f_type,seat_type,p_id);
-                insertData(seat_type,p_id,b_seat,b_price,bookNoSeat,amount);
+                InsertUpdateData.bookingData(booking_id,f_type,seat_type,p_id);
+                InsertUpdateData.insertData(seat_type,p_id,b_seat,b_price,bookNoSeat,amount);
             }
         }
         else {
@@ -74,125 +75,17 @@ public class BookingTicket {
         else {
             System.out.println("Ticket Not Available");
         }
-        booking_id = idGeneration1();
+        int booking_id = idGeneration1();
         System.out.println("-----Booking Id-----"+booking_id);
         System.out.println(f_type+" Flight --> "+bookNoSeat+" Takal Seat Booked Successfully.");
         amount = bookNoSeat * t_price * meals;
         System.out.println("Payment :"+amount);
         t_price *= 200;
-        insertData(seat_type,p_id,t_seat,t_price,bookNoSeat,amount);
-        bookingData(booking_id,f_type,seat_type,p_id);
+        InsertUpdateData.insertData(seat_type,p_id,t_seat,t_price,bookNoSeat,amount);
+        InsertUpdateData.bookingData(booking_id,f_type,seat_type,p_id);
     }
     public int idGeneration1() {
         Random r=new Random();
          return r.nextInt(10000000);
-    }
-    private void bookingData(int booking_id, int f_type, String seat_type,int p_id) {
-        try{
-            Connection con = DriverManager.getConnection(DB_URL, USER, PASS);
-            Statement statement = con.createStatement();
-            String sql = "INSERT INTO Booking_Table VALUES("+booking_id+","+f_type+",'"+seat_type+"',"+p_id+")";
-            statement.executeUpdate(sql);
-            System.out.println("-------------------------------------------");
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-    }
-    private void insertData(String seat_type,int id,int no_seat, int price, int bookNoSeat, int amount) {
-        try {
-            Connection con = DriverManager.getConnection(DB_URL, USER, PASS);
-            Statement statement = con.createStatement();
-            if (seat_type.equals("E")) {
-                String sql = "INSERT INTO Economy_Table (P_Id,No_Seat,E_Price,Book_No_Seat,Amount) VALUES("+id+"," + no_seat + "," + price + "," + bookNoSeat + "," + amount + ")";
-                statement.executeUpdate(sql);
-                System.out.println("-----------------------------------------------");
-            } else if (seat_type.equals("B")) {
-                String sql = "INSERT INTO Business_Table (P_Id,No_Seat,B_Price,Book_No_Seat,Amount) VALUES("+id+"," + no_seat + "," + price + "," + bookNoSeat + "," + amount + ")";
-                statement.executeUpdate(sql);
-                System.out.println("-----------------------------------------------");
-            } else {
-                String sql = "INSERT INTO Takal_Table (P_Id,No_Seat,T_Price,Book_No_Seat,Amount) VALUES("+id+"," + no_seat + "," + price + "," + bookNoSeat + "," + amount + ")";
-                statement.executeUpdate(sql);
-                System.out.println("-----------------------------------------------");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    public void cancel(){
-        String type;
-        try{
-            Connection con = DriverManager.getConnection(DB_URL, USER, PASS);
-            Statement statement = con.createStatement();
-            System.out.print("Enter the Booking Id : ");
-            int B_id = scanner.nextInt();
-            String sql1 = "SELECT * FROM BookingTable where Booking_Id = '"+B_id+"'";
-            ResultSet resultSet = statement.executeQuery(sql1);
-            while (resultSet.next()) {
-                type = resultSet.getString("Seat_Type");
-                System.out.println("-> Number of Booking Cancelled ");
-                int c_No = scanner.nextInt();
-                if (type.equals("E")) {
-                    while (c_No > 0) {
-                        e_seat++;
-                        c_No--;
-                    }
-                    balance = c_No * 500;
-                    e_price -= balance;
-                    amount -= balance;
-                    System.out.println("Current Ticket Price : " + e_price);
-                    updateData(type,e_seat,e_price,amount,p_id);
-                } else if (type.equals("B")) {
-                    balance = c_No * 300;
-                    while (c_No > 0) {
-                        b_seat++;
-                        c_No--;
-                    }
-                    b_price -= balance;
-                    amount -= balance;
-                    System.out.println("Current Ticket Price : " + b_price);
-                    updateData(type,b_seat,b_price,amount,p_id);
-                } else {
-                    balance = c_No * 600;
-                    while (c_No > 0) {
-                        t_seat++;
-                        c_No--;
-                    }
-                    t_price -= balance;
-                    amount -= balance;
-                    System.out.println("Current Ticket Price : " + t_price);
-                    updateData(type,t_seat,t_price,amount,p_id);
-                }
-            }
-            System.out.println("Your Ticket Cancelled Successfully...!!");
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-    }
-    public void updateData(String seat_type,int no_seat,int price,int amount,int p_id) {
-        try{
-            Connection con = DriverManager.getConnection(DB_URL, USER, PASS);
-            Statement statement = con.createStatement();
-            if(seat_type.equals("E")) {
-                String sql = "UPDATE Economy_Table SET No_Seat =" + no_seat + ",E_Price = " + price + ",Amount = " + amount + ",WHERE P_Id = " + p_id + "";
-                statement.executeUpdate(sql);
-                System.out.println("-----------------------------------------------");
-            }
-            else if(seat_type.equals("B")) {
-                String sql = "UPDATE Business_Table SET No_Seat ="+no_seat+",E_Price = "+price+",Amount = "+amount+",WHERE P_Id = "+p_id+"";
-                statement.executeUpdate(sql);
-                System.out.println("-----------------------------------------------");
-            }
-            else {
-                String sql = "UPDATE Takal_Table SET No_Seat ="+no_seat+",E_Price = "+price+",Amount = "+amount+",WHERE P_Id = "+p_id+"";
-                statement.executeUpdate(sql);
-                System.out.println("-----------------------------------------------");
-            }
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
     }
 }

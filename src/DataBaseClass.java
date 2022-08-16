@@ -32,7 +32,7 @@ public class DataBaseClass {
             DB_URL += "TicketBooking";
             Connection con = DriverManager.getConnection(DB_URL, USER, PASS);
             Statement statement = con.createStatement();
-            String sql = "CREATE TABLE IF NOT EXISTS Booking_Table(Booking_Id INTEGER NOT NULL,F_Type INTEGER NOT NULL , Seat_Type INTEGER NOT NULL,P_Id INTEGER NOT NULL,PRIMARY KEY(Booking_Id),FOREIGN KEY(P_Id) REFERENCES PASSENGER_Table1(P_Id))";
+            String sql = "CREATE TABLE IF NOT EXISTS Book_Table(Booking_Id INTEGER NOT NULL,F_Type INTEGER NOT NULL , Seat_Type VARCHAR(50) NOT NULL,P_Id INTEGER NOT NULL,PRIMARY KEY(Booking_Id),FOREIGN KEY(P_Id) REFERENCES PASSENGER_Table1(P_Id))";
             statement.executeUpdate(sql);
             System.out.println("Booking table is Successfully created...");
         }

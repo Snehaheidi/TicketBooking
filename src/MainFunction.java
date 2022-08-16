@@ -27,7 +27,7 @@ public class MainFunction {
         }
     }
     private static void bookTicket() {
-        System.out.println(" 1)Booking Ticket \n 2)Cancel Ticket \n 3)Logout ");
+        System.out.println(" 1)Booking Ticket \n 2)Cancel Ticket \n3)View Booking Details \n 4)Logout ");
         int option = scanner.nextInt();
         BookingTicket b = new BookingTicket();
         switch (option){
@@ -36,10 +36,14 @@ public class MainFunction {
                 bookTicket();
                 break;
             case 2:
-                b.cancel();
+                CancelTicket.cancel();
+                System.out.println("Your Ticket Cancelled Successfully...!!");
                 bookTicket();
                 break;
             case 3:
+                ViewBookDetails.bookDetails();
+                System.out.println("-------------------------------------");
+            case 4:
                 System.out.println("---ThankYou---!!!");
                 System.exit(0);
             default:
